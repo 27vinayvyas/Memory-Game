@@ -39,12 +39,16 @@ function start(){
     flag2=0;
     timer();
     console.log('nd');
+    var div1= document.createElement('div');
     if(level==1){
         rows=4;cols=4;
+        div1.className='col-md-6 col-md-offset-3';
     }else if(level==2){
         rows=4;cols=5;
+        div1.className='col-md-8 col-md-offset-2';
     }else{
         rows=4;cols=6;
+        div1.className='col-md-9 col-md-offset-2';
     }
 
     for(var i=1;i<=(rows*cols/2);i++){
@@ -61,11 +65,11 @@ function start(){
         }
     }
 
-    var div1= document.createElement('div');
+    
     
 
     for(var i=1;i<=rows;i++){
-        div1.className='col-md-6 col-md-offset-3';
+        
         for(var j=1;j<=cols;j++){
             var y=images.length;
             var x=Math.floor(Math.random()*y);
@@ -89,6 +93,10 @@ function start(){
     setTimeout("myFunction()", 1000);
 
 }
+
+/*
+    For flipping all the objects with black portion up.
+*/
 
 function myFunction(){
     console.log("ncjc");
@@ -128,8 +136,8 @@ if(state[str]==0){
     var image = 'img/' + str + '.jpeg';
     var img=document.getElementById(str);
     img.src=image;
-    img.style.transform = "rotateY(180deg)";
-    img.style.transition = "all 0.5s easy";
+    //img.style.transform = "rotateY(180deg)";
+    //img.style.transition = "all 0.5s easy";
     if(flag==0){
         flag=1;
         current_id=str;
