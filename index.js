@@ -3,17 +3,38 @@ var flag=0,flag2=0;
 var no_of_games=0;
 var level=1;
 var current_id="";
-var best_time1=50000000,best_time2=50000000,best_time3=50000000;
+var best_time1=Number.MAX_VALUE,best_time2=Number.MAX_VALUE,best_time3=Number.MAX_VALUE;
 var current_time;
 var distance;
+var x;
 
 var div_body = document.getElementById('div');
-//var body = document.getElementById('body');
-
 var rows,cols;
 var images=[];
 
+var state={};
+
+/*
+    Starts the Game, creating the grid 
+    according to the specified level.
+*/
 function start(){
+
+    for(var i=1;i<=12;i++){
+        if(i<10){
+            var path="0";
+            path+=i;
+            console.log(path);
+            state[path+1]=0;
+            state[path+2]=0;
+        }else{
+            var path="";
+            path+=i;
+            state[path+1]=0;
+            state[path+2]=0;    
+        }
+    }
+    
     div_body.innerHTML='';
     flag2=0;
     timer();
@@ -44,7 +65,7 @@ function start(){
     
 
     for(var i=1;i<=rows;i++){
-        div1.className='row';
+        div1.className='col-md-6 col-md-offset-3';
         for(var j=1;j<=cols;j++){
             var y=images.length;
             var x=Math.floor(Math.random()*y);
@@ -90,16 +111,29 @@ function myFunction(){
     }
 }
 
+/*
+    Onclick method of image
+    If no image is flipped, the clicked image is flipped.
+    If one image is already flipped, checks for similarity.
+*/
+
 function flipIt(){
+    
     var str=event.target.id;
     console.log(str);
+    console.log(state[str]);
+    
+if(state[str]==0){
+
     var image = 'img/' + str + '.jpeg';
     var img=document.getElementById(str);
     img.src=image;
-
+    img.style.transform = "rotateY(180deg)";
+    img.style.transition = "all 0.5s easy";
     if(flag==0){
         flag=1;
         current_id=str;
+        state[str]=1;
     }else{
         if(current_id.substr(0,2)==str.substr(0,2) && current_id[2]!=str[2]){
             count++;
@@ -108,8 +142,11 @@ function flipIt(){
             //img.src=image;
             flag=0;
             current_id="";
+            state[str]=1;
         }else{
             var image = 'img/black.jpeg';
+            state[str]=0;
+            state[current_id]=0;
             setTimeout(function(){
             document.getElementById(current_id).src=image;
             document.getElementById(str).src=image;
@@ -128,7 +165,13 @@ function flipIt(){
 
     }
 }
+}
 
+/*
+    Called when all the pairs are matched.
+    Display current and best score.
+    Asks for playing again or Next level.
+*/
 function level_Complete(){
     div_body.innerHTML="";
     flag2=1;
@@ -151,7 +194,7 @@ function level_Complete(){
     div1.innerHTML='<h4>Best Score-Level 1 : ' + best_time1/1000 + '</h4>';
     div2.innerHTML='<h4>Current Score : ' + current_time/1000 + '</h4>';
     div3.innerHTML='<h4>Best Score-Level 2 : ' + best_time2/1000 + '</h4>';
-    div4.innerHTML='<h4>Current Score-Level 3 : ' + best_time3/1000 + '</h4>';
+    div4.innerHTML='<h4>Best Score-Level 3 : ' + best_time3/1000 + '</h4>';
     btn1.innerHTML="Move To Next Level";
     btn1.addEventListener('click',function(){
         
@@ -186,43 +229,36 @@ function level_Complete(){
             
 }
 
-function endGame(){
-    div_body.innerHTML="";
+/*
+    For displaying the timer clock.
+    Resets at start of each level.
+*/
 
-}
-var x;
 function timer(){
-var time = document.createElement('span');
-time.id='span';
-div_body.appendChild(time);
+    var time = document.createElement('span');
+    time.id='span';
+    div_body.appendChild(time);
 
-var start = new Date().getTime();
+    var start = new Date().getTime();
             
-// Update the count down every 1 second
-x = setInterval(function() {
+    x = setInterval(function() {
 
-  // Get today's date and time
-  var now = new Date().getTime();
+    var now = new Date().getTime();
     
-  // Find the distance between now and the count down date
-  distance = now-start;
+    distance = now-start;
     
-  // Time calculations for days, hours, minutes and seconds
-  //var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
     
-  // Output the result in an element with id="demo"
-  document.getElementById("span").innerHTML = hours + "h "
-  + minutes + "m " + seconds + "s ";
+    document.getElementById("span").innerHTML = hours + "h "
+    + minutes + "m " + seconds + "s ";
     
-  // If the count down is over, write some text 
-  if (flag2==1) {
-    console.log(flag2);
-    clearInterval(x);
-    //document.getElementById("span").innerHTML = "EXPIRED";
-  }
-}, 1000);
+   
+    if (flag2==1) {
+        console.log(flag2);
+        clearInterval(x);
+    }
+    }, 1000);
 }
 
