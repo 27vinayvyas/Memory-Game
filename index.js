@@ -11,7 +11,7 @@ var current_time;
 var distance;
 var x;
 
-var level_1 = 0,
+var level_1 = 1,
   level_2 = 0,
   level_3 = 0;
 
@@ -293,10 +293,8 @@ function level_Complete() {
   var btn2 = document.createElement("button");
 
   if (level == 1) {
-    level_1 = 1;
-  } else if (level == 2) {
     level_2 = 1;
-  } else {
+  } else if (level == 2) {
     level_3 = 1;
   }
 
