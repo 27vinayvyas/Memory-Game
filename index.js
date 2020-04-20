@@ -2,7 +2,7 @@ var count = 0;
 var flag = 0,
   flag2 = 0;
 var no_of_games = 0;
-var level = 1;
+var level = 2;
 var current_id = "";
 var best_time1 = Number.MAX_VALUE,
   best_time2 = Number.MAX_VALUE,
@@ -53,15 +53,15 @@ function start() {
   if (level == 1) {
     rows = 4;
     cols = 4;
-    div1.className = "col-md-6 col-md-offset-3";
+    div1.className = "col-md-6 col-md-offset-4";
   } else if (level == 2) {
     rows = 4;
     cols = 5;
-    div1.className = "col-md-8 col-md-offset-3";
+    div1.className = "col-md-6 col-md-offset-4";
   } else {
     rows = 4;
     cols = 6;
-    div1.className = "col-md-9 col-md-offset-2";
+    div1.className = "col-md-6 col-md-offset-3";
   }
 
   for (var i = 1; i <= (rows * cols) / 2; i++) {
