@@ -48,7 +48,8 @@ function start() {
   div_body.innerHTML = "";
   flag2 = 0;
   countCorona();
-  timer();
+  setTimeout(timer(), 3000);
+
   console.log("nd");
 
   var div_row1;
