@@ -9,11 +9,14 @@ var best_time1 = Number.MAX_VALUE,
   best_time3 = Number.MAX_VALUE;
 var current_time;
 var distance;
-var x;
+var intervalId;
 
 var level_1 = 1,
   level_2 = 0,
   level_3 = 0;
+var complete_1 = 0,
+  complete_2 = 0,
+  complete_3 = 0;
 
 var div_body = document.getElementById("div");
 var rows, cols;
@@ -25,6 +28,7 @@ var state = {};
     Starts the Game, creating the grid 
     according to the specified level.
 */
+
 function start() {
   for (var i = 1; i <= 12; i++) {
     if (i < 10) {
@@ -43,12 +47,11 @@ function start() {
 
   div_body.innerHTML = "";
   flag2 = 0;
+  countCorona();
   timer();
   console.log("nd");
 
-  var div_row1 = document.createElement("div");
-  div_row1.className = "row";
-
+  var div_row1;
   var div1 = document.createElement("div");
   if (level == 1) {
     rows = 4;
@@ -79,26 +82,37 @@ function start() {
   }
 
   for (var i = 1; i <= rows; i++) {
-    //div1.innerHTML = "";
+    div_row1 = document.createElement("div");
+    div_row1.className = "row";
+    var dummy = document.createElement("div");
+    if (level == 1) {
+      dummy.className = "col-md-4";
+    } else if (level == 2) {
+      dummy.className = "col-md-3";
+    } else {
+      dummy.className = "col-md-3";
+    }
+    div_row1.appendChild(dummy);
     for (var j = 1; j <= cols; j++) {
       var y = images.length;
       var x = Math.floor(Math.random() * y);
       var img = "img/" + images[x] + ".jpeg";
       var image = document.createElement("img");
 
-      image.style.width = "100px";
-      image.style.height = "100px";
+      image.style.width = "7vw";
+      image.style.height = "5vw";
       image.style.margin = "5px";
       image.src = img;
       image.id = images[x];
       image.addEventListener("click", flipIt);
+      image.className = "col-md-1";
 
-      div1.appendChild(image);
+      div_row1.appendChild(image);
       images.splice(x, 1);
     }
     div1.appendChild(document.createElement("br"));
     //div_row1.appendChild(div1);
-    div_body.appendChild(div1);
+    div_body.appendChild(div_row1);
   }
 
   div_row1 = document.createElement("div");
@@ -116,7 +130,7 @@ function start() {
     if (level != 1 && level_1 == 1) {
       level = 1;
       flag2 = 1;
-      clearInterval(x);
+      clearInterval(intervalId);
       start();
     }
   });
@@ -136,7 +150,7 @@ function start() {
     if (level != 2 && level_2 == 1) {
       level = 2;
       flag2 = 1;
-      clearInterval(x);
+      clearInterval(intervalId);
       start();
     }
   });
@@ -157,7 +171,7 @@ function start() {
     if (level != 3 && level_3 == 1) {
       level = 3;
       flag2 = 1;
-      clearInterval(x);
+      clearInterval(intervalId);
       start();
     }
   });
@@ -175,13 +189,13 @@ function start() {
   div_col_1.className = "col-md-2 col-md-offset-3 ";
   div_col_2.className = "col-md-2 ";
   div_col_3.className = "col-md-2 ";
-  if (level_1 == 1) {
+  if (complete_1 == 1) {
     div_col_1.innerHTML = best_time1 / 1000;
   }
-  if (level_2 == 1) {
+  if (complete_2 == 1) {
     div_col_2.innerHTML = best_time2 / 1000;
   }
-  if (level_3 == 1) {
+  if (complete_3 == 1) {
     div_col_3.innerHTML = best_time3 / 1000;
   }
 
@@ -284,7 +298,7 @@ function level_Complete() {
   div_body.innerHTML = "";
   flag2 = 1;
   console.log(flag2);
-  clearInterval(x);
+  clearInterval(intervalId);
   var div1 = document.createElement("div");
   var div2 = document.createElement("div");
   var div3 = document.createElement("div");
@@ -293,9 +307,13 @@ function level_Complete() {
   var btn2 = document.createElement("button");
 
   if (level == 1) {
+    complete_1 = 1;
     level_2 = 1;
   } else if (level == 2) {
+    complete_2 = 1;
     level_3 = 1;
+  } else {
+    complete_3 = 1;
   }
 
   if (level == 1 && current_time < best_time1) {
@@ -347,13 +365,24 @@ function level_Complete() {
 */
 
 function timer() {
-  var time = document.createElement("span");
+  var rows = document.createElement("div");
+  rows.className = "row";
+  var col1 = document.createElement("h1");
+  col1.className = "col-md-3 col-md-offset-5";
+  col1.innerHTML = "Memory Game";
+  var time = document.createElement("h3");
   time.id = "span";
-  div_body.appendChild(time);
+  time.className = "col-md-4";
+  time.innerHTML = "0h 0m 0s";
+  rows.appendChild(col1);
+  //rows.appendChild(document.createElement("br"));
+  rows.appendChild(time);
 
+  div_body.appendChild(rows);
+  //div_body.appendChild(document.createElement("br"));
   var start = new Date().getTime();
 
-  x = setInterval(function () {
+  intervalId = setInterval(function () {
     var now = new Date().getTime();
 
     distance = now - start;
@@ -369,7 +398,142 @@ function timer() {
 
     if (flag2 == 1) {
       console.log(flag2);
-      clearInterval(x);
+      clearInterval(intervalId);
     }
   }, 1000);
 }
+
+let url = "https://api.covid19api.com/summary";
+
+function countCorona() {
+  var details = [],
+    details2 = [];
+
+  fetch(url)
+    .then((res) => res.json())
+    .then(function (data) {
+      //console.log(data["Global"]);
+      //console.log(data["Countries"][101]);
+      details[0] = data["Global"]["NewConfirmed"];
+      details[1] = data["Global"]["TotalConfirmed"];
+      details[2] = data["Global"]["NewDeaths"];
+      details[3] = data["Global"]["TotalDeaths"];
+      details[4] = data["Global"]["NewRecovered"];
+      details[5] = data["Global"]["TotalConfirmed"];
+
+      details2[0] = data["Countries"][101]["NewConfirmed"];
+      details2[1] = data["Countries"][101]["TotalConfirmed"];
+      details2[2] = data["Countries"][101]["NewDeaths"];
+      details2[3] = data["Countries"][101]["TotalDeaths"];
+      details2[4] = data["Countries"][101]["NewRecovered"];
+      details2[5] = data["Countries"][101]["TotalConfirmed"];
+
+      //console.log(typeof details);
+      var table = document.createElement("table");
+      table.className = "table table-dark";
+
+      var thead = document.createElement("thead");
+      thead.className = "thead-dark";
+
+      var tr = document.createElement("tr");
+      var cnts = [
+        "New Confirmed",
+        "Total Confirmd",
+        "New Death",
+        "Total Death",
+        "New recovered",
+        "Total recovered",
+      ];
+      var th = document.createElement("th");
+      th.className = "col";
+      th.innerHTML = "#";
+      tr.appendChild(th);
+      for (var i in cnts) {
+        var th = document.createElement("th");
+        th.className = "col";
+        th.innerHTML = cnts[i];
+        tr.appendChild(th);
+      }
+
+      thead.appendChild(tr);
+      table.appendChild(thead);
+
+      //welwknwlkwflk43rd
+
+      var thead = document.createElement("tbody");
+
+      var tr = document.createElement("tr");
+      var cnts = details; // data["Global"];
+      console.log("global", details);
+      var th = document.createElement("td");
+      th.className = "col";
+      th.innerHTML = "Global Stats";
+      tr.appendChild(th);
+      for (var i in details) {
+        var th = document.createElement("td");
+        th.className = "col";
+        th.innerHTML = details[i];
+        tr.appendChild(th);
+      }
+
+      thead.appendChild(tr);
+      table.appendChild(thead);
+
+      //kjdvks c
+
+      var thead = document.createElement("tbody");
+
+      var tr = document.createElement("tr");
+      var cnts = details2; // data["Countries"][101];
+      //console.log("india", details2);
+      var th = document.createElement("td");
+      th.className = "col";
+      th.innerHTML = "India Stats";
+      tr.appendChild(th);
+      for (var i = 0; i < details2.length; i++) {
+        var th = document.createElement("td");
+        th.className = "col";
+        th.innerHTML = details2[i];
+        tr.appendChild(th);
+      }
+
+      thead.appendChild(tr);
+      table.appendChild(thead);
+
+      div_body.appendChild(table);
+
+      //console.log(details);
+    })
+    .catch((error) => console.log("Error"));
+}
+/*
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>*/
